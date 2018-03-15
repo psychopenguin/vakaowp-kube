@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  labels:
+    app: vakao-db
+  name: vakao-db
+  namespace: vakao
+spec:
+  replicas: 1
+  serviceName: vakao-db
+  template:
+    metadata:
+      labels:
+        app: vakao-db
+    spec:
+      volumes:
+        - hostPath:
+            path: /data/vakao/db
+          name: data-vol
+      containers:
+        - name: vakao-db
+          env:
+            - name: MYSQL_DATABASE
+              value: vakao_wordpress
+            - name: MYSQL_USER
+              value: vakao
+            - name: MYSQL_PASSWORD
+              value: vakao
+            - name: MYSQL_RANDOM_ROOT_PASSWORD
+              value: "yes"
+          image: mariadb
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3306
+              name: vakao-db
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: data-vol
